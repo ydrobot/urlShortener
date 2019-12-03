@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
 
 namespace Api
 {
@@ -17,8 +14,29 @@ namespace Api
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                   .UseStartup<Startup>();
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                          .UseKestrel()
+                          .ConfigureAppConfiguration((hostingContext, config) =>
+                          {
+                              var env = hostingContext.HostingEnvironment;
+                              config.AddJsonFile("appsettings.json", true, true);
+                              config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
+                              config.AddEnvironmentVariables();
+
+                              Log.Logger = new LoggerConfiguration()
+                                           .MinimumLevel.Information()
+                                           .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                                           .ReadFrom.Configuration(config.Build())
+                                           .Enrich.WithProperty("Application", "WordSearch")
+                                           .Enrich.FromLogContext()
+                                           .WriteTo.ColoredConsole()
+                                           .WriteTo.RollingFile(new JsonFormatter(), "Logs/word-search-api-{Date}.log",
+                                                                shared: true)
+                                           .CreateLogger();
+                          })
+                          .UseStartup<Startup>();
+        }
     }
 }

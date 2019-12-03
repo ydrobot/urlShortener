@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Api.Configuration;
 using Api.Configuration.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 
 namespace Api
 {
@@ -22,6 +16,7 @@ namespace Api
         }
 
         public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MongoSettings>(options =>
@@ -29,24 +24,50 @@ namespace Api
                 options.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
                 options.Database = Configuration.GetSection("MongoConnection:Database").Value;
             });
-            
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.Configure<ServiceSettings>(options =>
+            {
+                options.ServiceName =
+                    Configuration.GetSection("ServiceSetting:Name").Value;
+            });
+
+            services.RegistrationContainer();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Search word API",
+                    Version = "v1"
+                });
+                c.DescribeAllEnumsAsStrings();
+            });
+
+            services.AddMvc();
         }
 
-        
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
+                app.UseDatabaseErrorPage();
             }
 
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            if (env.IsDevelopment() || env.IsStaging())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c => { c.SwaggerEndpoint("../swagger/v1/swagger.json", "url shortener API V1"); });
+            }
+
+            app.UseMvcWithDefaultRoute();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

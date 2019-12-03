@@ -12,15 +12,13 @@ namespace Model.DalModel
         public ObjectId Id { get; set; }
 
         public Guid UserId { get; set; }
-        
-        public string ShortUrl { get; set; }
-        
+
+        public Guid ShortUrl { get; set; }
+
         public string Url { get; set; }
-        
-        [BsonDateTimeOptions]
-        public DateTime CreatedAt { get; set; }
-        
-        [BsonDateTimeOptions]
-        public List<DateTime> FollowedAt { get; set; }
+
+        [BsonDateTimeOptions] public DateTime CreatedAt { get; set; }
+
+        [BsonDateTimeOptions] public List<DateTime> FollowedAt { get; set; }
     }
 }
