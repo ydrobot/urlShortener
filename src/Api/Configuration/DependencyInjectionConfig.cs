@@ -8,7 +8,7 @@ namespace Api.Configuration
     {
         public static void RegistrationContainer(this IServiceCollection services)
         {
-            services.AddTransient<IUrlRepository, UrlRepository>();
+            services.AddSingleton<IUrlRepository, UrlRepository>();
             services.AddScoped<IUrlService, UrlService>();
         }
     }

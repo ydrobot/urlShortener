@@ -27,7 +27,7 @@ namespace Api.Controllers
         [HttpGet("{shortUrl}")]
         public async Task<ActionResult<string>> GetUrlAsync(Guid shortUrl)
         {
-            return Ok(await _urlService.GetUrlByShortAsync(shortUrl));
+            return Redirect(await _urlService.GetUrlByShortAsync(shortUrl));
         }
 
         [HttpGet("statistic/user")]
