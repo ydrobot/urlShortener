@@ -1,5 +1,6 @@
 ﻿using Api.Configuration;
 using Api.Configuration.Model;
+using Api.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -60,6 +61,9 @@ namespace Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => { c.SwaggerEndpoint("../swagger/v1/swagger.json", "url shortener API V1"); });
             }
+
+            app.UseMiddleware<CookieSetMiddleware>();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseMvcWithDefaultRoute();
             app.UseMvc(routes =>

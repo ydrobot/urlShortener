@@ -35,6 +35,7 @@ namespace Domain
             var urlInfo = await _repository.GetUrlInfoByShortUrlAsync(shortUrl);
             if (urlInfo == null)
             {
+                //todo: custom exception
                 throw new ArgumentNullException($"Short url {shortUrl} not found");
             }
 
