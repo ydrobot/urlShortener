@@ -10,12 +10,15 @@ namespace Domain.Url
 
         public static string Encode(int i)
         {
-            if (i == 0) return Alphabet[0].ToString();
+            if (i == 0)
+            {
+                return Alphabet[0].ToString();
+            }
 
             var s = string.Empty;
 
             while (i > 0)
-            {  
+            {
                 s += Alphabet[i % Base];
                 i /= Base;
             }

@@ -14,7 +14,8 @@ namespace Domain.Statistic
         private readonly IUrlRepository _repository;
         private readonly string _serviceName;
 
-        public StatisticService(IHttpContextAccessor httpContextAccessor, IUrlRepository repository, IOptions<ServiceSettings> options)
+        public StatisticService(IHttpContextAccessor httpContextAccessor, IUrlRepository repository,
+                                IOptions<ServiceSettings> options)
         {
             _httpContextAccessor = httpContextAccessor;
             _repository = repository;

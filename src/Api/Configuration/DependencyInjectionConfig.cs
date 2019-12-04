@@ -1,6 +1,5 @@
 using Dal;
 using Dal.Repositories;
-using Domain;
 using Domain.Statistic;
 using Domain.Url;
 using Microsoft.Extensions.DependencyInjection;

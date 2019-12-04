@@ -11,11 +11,12 @@ namespace Domain.Url
 {
     public class UrlService : IUrlService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUrlRepository _repository;
         private readonly string _serviceName;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        
-        public UrlService(IOptions<ServiceSettings> options, IUrlRepository repository, IHttpContextAccessor httpContextAccessor)
+
+        public UrlService(IOptions<ServiceSettings> options, IUrlRepository repository,
+                          IHttpContextAccessor httpContextAccessor)
         {
             _serviceName = options.Value.ServiceName;
             _repository = repository;
