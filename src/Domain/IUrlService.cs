@@ -7,7 +7,7 @@ namespace Domain
     public interface IUrlService
     {
         Task<string> CreateShortUrlAsync(string url, Guid userId);
-        Task<string> GetUrlByShortAsync(Guid shortUrl);
+        Task<string> GetUrlByShortAsync(string shortUrl);
         Task<UrlStatisticInfo[]> GetUrlStatisticAsync();
         Task<UrlStatisticInfo[]> GetUserUrlStatisticAsync(Guid userId);
     }

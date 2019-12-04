@@ -22,15 +22,18 @@ namespace Domain
 
         public async Task<string> CreateShortUrlAsync(string url, Guid userId)
         {
+            var maxId = await _repository.GetMaxIdAsync() + 1;
             var shortUrl = await _repository.CreateShortUrlAsync(new CreateShortUrlInfo
             {
+                Id = maxId,
                 Url = url,
-                UserId = userId
+                UserId = userId,
+                ShortUrl = GenerateShortUrlService.Encode(maxId)
             });
             return _serviceName + shortUrl;
         }
 
-        public async Task<string> GetUrlByShortAsync(Guid shortUrl)
+        public async Task<string> GetUrlByShortAsync(string shortUrl)
         {
             var urlInfo = await _repository.GetUrlInfoByShortUrlAsync(shortUrl);
             if (urlInfo == null)
@@ -39,7 +42,7 @@ namespace Domain
                 throw new ArgumentNullException($"Short url {shortUrl} not found");
             }
 
-            await _repository.FollowUrlByIdAsync(shortUrl);
+            await _repository.FollowUrlByIdAsync(urlInfo.Id);
             return urlInfo.Url;
         }
 

@@ -6,10 +6,11 @@ namespace Dal.Repositories
 {
     public interface IUrlRepository
     {
-        Task<Guid> CreateShortUrlAsync(CreateShortUrlInfo info);
+        Task<string> CreateShortUrlAsync(CreateShortUrlInfo info);
         Task<UrlInfo[]> GetAllUrlsInfoAsync();
         Task<UrlInfo[]> GetUrlsInfoByUserIdAsync(Guid userId);
-        Task<UrlInfo> GetUrlInfoByShortUrlAsync(Guid shortUrl);
-        Task FollowUrlByIdAsync(Guid shortUrl);
+        Task<UrlInfo> GetUrlInfoByShortUrlAsync(string shortUrl);
+        Task FollowUrlByIdAsync(int id);
+        Task<int> GetMaxIdAsync();
     }
 }

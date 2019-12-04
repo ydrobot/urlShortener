@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Api.Configuration.Model;
 using Microsoft.Extensions.Options;
@@ -17,13 +18,14 @@ namespace Dal.Repositories
             _context = new UrlContext(settings);
         }
 
-        public async Task<Guid> CreateShortUrlAsync(CreateShortUrlInfo info)
+        public async Task<string> CreateShortUrlAsync(CreateShortUrlInfo info)
         {
             var urlInfo = new UrlInfo
             {
+                Id = info.Id,
                 Url = info.Url,
                 UserId = info.UserId,
-                ShortUrl = Guid.NewGuid(),
+                ShortUrl = info.ShortUrl,
                 CreatedAt = DateTime.UtcNow,
                 FollowedAt = new List<DateTime>()
             };
@@ -34,7 +36,10 @@ namespace Dal.Repositories
 
         public async Task<UrlInfo[]> GetAllUrlsInfoAsync()
         {
-            return (await _context.Urls.Find(_ => true).ToListAsync())?.ToArray();
+            var urls = await _context.Urls.Find(_ => true).ToListAsync();
+            return urls != null
+                       ? urls.ToArray()
+                       : new UrlInfo[] { };
         }
 
         public async Task<UrlInfo[]> GetUrlsInfoByUserIdAsync(Guid userId)
@@ -42,18 +47,24 @@ namespace Dal.Repositories
             return (await _context.Urls.Find(f => f.UserId == userId).ToListAsync())?.ToArray();
         }
 
-        public async Task<UrlInfo> GetUrlInfoByShortUrlAsync(Guid shortUrl)
+        public async Task<UrlInfo> GetUrlInfoByShortUrlAsync(string shortUrl)
         {
             return await _context.Urls
                                  .Find(f => f.ShortUrl == shortUrl)
                                  .FirstOrDefaultAsync();
         }
 
-        public async Task FollowUrlByIdAsync(Guid shortUrl)
+        public async Task FollowUrlByIdAsync(int id)
         {
-            var filter = Builders<UrlInfo>.Filter.Eq(e => e.ShortUrl, shortUrl);
+            var filter = Builders<UrlInfo>.Filter.Eq(e => e.Id, id);
             var update = Builders<UrlInfo>.Update.Push(e => e.FollowedAt, DateTime.UtcNow);
             await _context.Urls.FindOneAndUpdateAsync(filter, update);
+        }
+
+        public async Task<int> GetMaxIdAsync()
+        {
+            var urls = await GetAllUrlsInfoAsync();
+            return urls == null || !urls.Any() ? 0 : urls.Max(m => m.Id);
         }
     }
 }

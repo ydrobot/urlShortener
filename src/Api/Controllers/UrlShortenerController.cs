@@ -25,7 +25,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("{shortUrl}")]
-        public async Task<ActionResult<string>> GetUrlAsync(Guid shortUrl)
+        public async Task<ActionResult<string>> GetUrlAsync(string shortUrl)
         {
             return Redirect(await _urlService.GetUrlByShortAsync(shortUrl));
         }
