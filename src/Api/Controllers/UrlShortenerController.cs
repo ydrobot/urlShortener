@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Api.Extension;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -21,7 +19,7 @@ namespace Api.Controllers
         [HttpPost("short-url")]
         public async Task<ActionResult<string>> CreateShortUrlAsync(string url)
         {
-            return Ok(await _urlService.CreateShortUrlAsync(url, HttpContext.GetURLSH()));
+            return Ok(await _urlService.CreateShortUrlAsync(url));
         }
 
         [HttpGet("{shortUrl}")]
@@ -33,7 +31,7 @@ namespace Api.Controllers
         [HttpGet("statistic/user")]
         public async Task<ActionResult<UrlStatisticInfo[]>> GetUserUrlStatistics()
         {
-            return Ok(await _urlService.GetUserUrlStatisticAsync(HttpContext.GetURLSH()));
+            return Ok(await _urlService.GetUserUrlStatisticAsync());
         }
 
         [HttpGet("statistic")]

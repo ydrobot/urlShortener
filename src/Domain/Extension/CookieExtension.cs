@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Http;
 
-namespace Api.Extension
+namespace Domain.Extension
 {
     public static class CookieExtension
     {

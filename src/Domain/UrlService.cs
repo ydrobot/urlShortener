@@ -1,8 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Api.Configuration.Model;
 using Dal.Repositories;
+using Domain.Extension;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Model;
 using Model.DalModel;
@@ -13,21 +14,23 @@ namespace Domain
     {
         private readonly IUrlRepository _repository;
         private readonly string _serviceName;
-
-        public UrlService(IOptions<ServiceSettings> options, IUrlRepository repository)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        
+        public UrlService(IOptions<ServiceSettings> options, IUrlRepository repository, IHttpContextAccessor httpContextAccessor)
         {
             _serviceName = options.Value.ServiceName;
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<string> CreateShortUrlAsync(string url, Guid userId)
+        public async Task<string> CreateShortUrlAsync(string url)
         {
             var maxId = await _repository.GetMaxIdAsync() + 1;
             var shortUrl = await _repository.CreateShortUrlAsync(new CreateShortUrlInfo
             {
                 Id = maxId,
                 Url = url,
-                UserId = userId,
+                UserId = _httpContextAccessor.HttpContext.GetURLSH(),
                 ShortUrl = GenerateShortUrlService.Encode(maxId)
             });
             return _serviceName + shortUrl;
@@ -49,23 +52,13 @@ namespace Domain
         public async Task<UrlStatisticInfo[]> GetUrlStatisticAsync()
         {
             var urlInfo = await _repository.GetAllUrlsInfoAsync();
-            return urlInfo.Select(s => new UrlStatisticInfo
-            {
-                Url = s.Url,
-                UrlShort = _serviceName + s.ShortUrl,
-                Followed = s.FollowedAt.Count
-            }).ToArray();
+            return urlInfo.ToUrlStatisticInfos(_serviceName);
         }
 
-        public async Task<UrlStatisticInfo[]> GetUserUrlStatisticAsync(Guid userId)
+        public async Task<UrlStatisticInfo[]> GetUserUrlStatisticAsync()
         {
-            var urlInfo = await _repository.GetUrlsInfoByUserIdAsync(userId);
-            return urlInfo.Select(s => new UrlStatisticInfo
-            {
-                Url = s.Url,
-                UrlShort = _serviceName + s.ShortUrl,
-                Followed = s.FollowedAt.Count
-            }).ToArray();
+            var urlInfo = await _repository.GetUrlsInfoByUserIdAsync(_httpContextAccessor.HttpContext.GetURLSH());
+            return urlInfo.ToUrlStatisticInfos(_serviceName);
         }
     }
 }
