@@ -1,14 +1,10 @@
-using System;
 using System.Threading.Tasks;
-using Model;
 
-namespace Domain
+namespace Domain.Url
 {
     public interface IUrlService
     {
         Task<string> CreateShortUrlAsync(string url);
         Task<string> GetUrlByShortAsync(string shortUrl);
-        Task<UrlStatisticInfo[]> GetUrlStatisticAsync();
-        Task<UrlStatisticInfo[]> GetUserUrlStatisticAsync();
     }
 }

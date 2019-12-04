@@ -5,10 +5,9 @@ using Dal.Repositories;
 using Domain.Extension;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Model;
 using Model.DalModel;
 
-namespace Domain
+namespace Domain.Url
 {
     public class UrlService : IUrlService
     {
@@ -47,18 +46,6 @@ namespace Domain
 
             await _repository.FollowUrlByIdAsync(urlInfo.Id);
             return urlInfo.Url;
-        }
-
-        public async Task<UrlStatisticInfo[]> GetUrlStatisticAsync()
-        {
-            var urlInfo = await _repository.GetAllUrlsInfoAsync();
-            return urlInfo.ToUrlStatisticInfos(_serviceName);
-        }
-
-        public async Task<UrlStatisticInfo[]> GetUserUrlStatisticAsync()
-        {
-            var urlInfo = await _repository.GetUrlsInfoByUserIdAsync(_httpContextAccessor.HttpContext.GetURLSH());
-            return urlInfo.ToUrlStatisticInfos(_serviceName);
         }
     }
 }

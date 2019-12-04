@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Domain
+namespace Domain.Url
 {
     // https://en.wikipedia.org/wiki/Bijection
     public static class GenerateShortUrlService
